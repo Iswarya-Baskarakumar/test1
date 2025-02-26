@@ -1,16 +1,29 @@
+import os
 import streamlit as st
 import mysql.connector
 import pandas as pd
 import plotly.express as px
 from datetime import datetime
 
-# MySQL Connection
-conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="iswarya",
-    database="task_management"
-)
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+
+# Attempt MySQL Connection
+try:
+    conn = mysql.connector.connect(
+        host=st.secrets["mysql"]["host"],
+        user=st.secrets["mysql"]["user"],
+        password=st.secrets["mysql"]["password"],
+        database=st.secrets["mysql"]["database"],
+        connect_timeout=10  # Optional: Set timeout to prevent long waits
+    )
+    st.success("✅ Connected to MySQL successfully!")
+except mysql.connector.Error as err:
+    st.error(f"❌ Database connection failed: {err}")
+    st.stop()  # Prevent further execution if connection fails
 cursor = conn.cursor()
 
 # Function to check user login
